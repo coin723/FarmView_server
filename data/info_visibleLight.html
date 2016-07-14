@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1" />
+        
+        <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        
+        <style>
+            @import url(//cdn.jsdelivr.net/font-nanum/1.0/nanumbarungothic/nanumbarungothic.css);
+            
+            html, body {
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                margin: 0;
+                padding: 0;
+                font: 10vw 'Nanum Barun Gothic';
+            }
+            
+            svg {
+                width: 100%;
+                height: 100%;
+            }
+            
+            .bar rect, .bar line {
+                shape-rendering: crispEdges;
+            }
+            
+            .high.bar {
+                fill: #044437;
+            }
+            
+            .low.bar {
+                fill: #636666;
+            }
+            
+            .tick text {
+                display: none;
+            }
+            
+            .axis path, .axis line {
+                fill: none;
+                stroke: #044437;
+                shape-rendering: crispEdges;
+            }
+            
+            .axis path.domain {
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <script>
+            var vw = window.innerWidth / 100,
+                vh = window.innerHeight / 100,
+                vmin = vw > vh ? vh : vw,
+                vmax = vw > vh? vw : vh;
+            
+            var margin = {top: 15*vmin, right: 20*vw, bottom: 15*vmin, left: 20*vw};
+            
+            var svgElem = document.querySelector("svg");
+            
+            var width = window.innerWidth - margin.right - margin.left,
+                height = window.innerHeight - margin.top - margin.bottom;
+            
+            var svg = d3.select("body").append("svg")
+                .append("g")
+                .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+            
+            var yAxis = d3.svg.axis()
+                .orient("left")
+                .tickValues([0])
+                .outerTickSize(0)
+                .innerTickSize(-width);
+            
+            var padding = 15*vw,
+                innerPadding = 5*vw,
+                barWidth = 12.5*vw,
+                linePadding = 5*vh;
+            
+            var y = d3.scale.linear()
+                .range([height, 0]);
+            
+            d3.json("weather.json", function(error, datum) {
+                if(error) return console.error(error);
+                
+                Object.keys(datum).forEach(function(element) {
+                    datum[element][0] = +datum[element][0];
+                });
+                
+                var ymax = 32,
+                    ymin = -7.5;
+                
+                y.domain([ymin, ymax]);
+                
+                yAxis.scale(y);
+                
+                svg.append("g")
+                    .attr("class", "y axis")
+                    .call(yAxis);
+                
+                var bars_high = svg.selectAll(".high")
+                    .data(datum.tmx)
+                    .enter()
+                    .append("g")
+                    .attr("class", "bar high");
+                
+                var bars_low = svg.selectAll(".low")
+                    .data(datum.tmn)
+                    .enter()
+                    .append("g")
+                    .attr("class", "bar low");
+                
+                bars_high.append("rect")
+                    .attr("x", padding)
+                    .attr("y", function(d) {
+                        return barY(d);
+                    })
+                    .attr("width", barWidth)
+                    .attr("height", function(d) {
+                        return barHeight(d);
+                    });
+                
+                bars_high.append("text")
+                    .attr("x", padding)
+                    .attr("y", function(d) {
+                        return barY(d);
+                    })
+                    .attr("dy", function(d) {
+                        return labelDyHigh(d);
+                    })
+                    .style("text-anchor", "start")
+                    .text(function(d) {
+                        return "최고: " + d + "°C";
+                    });
+                
+                bars_low.append("rect")
+                    .attr("x", padding + barWidth + innerPadding)
+                    .attr("y", function(d) {
+                        return barY(d);
+                    })
+                    .attr("width", barWidth)
+                    .attr("height", function(d) {
+                        return barHeight(d);
+                    });
+                
+                bars_low.append("text")
+                    .attr("x", padding + barWidth + innerPadding)
+                    .attr("y", function(d) {
+                        return barY(d);
+                    })
+                    .attr("dy", function(d) {
+                        return labelDyLow(d);
+                    })
+                    .style("text-anchor", "start")
+                    .text(function(d) {
+                        return "최저: " + d + "°C";
+                    });
+                
+                function barY(value) {
+                    if(value >= 0) {
+                        return y(value);
+                    } else {
+                        return y(0);
+                    }
+                }
+                
+                function barHeight(value) {
+                    if(value >= 0) {
+                        return y(0) - y(value);
+                    } else {
+                        return y(value) - y(0);
+                    }
+                }
+                
+                function labelDyHigh(value) {
+                    return -3*vw;
+                }
+                
+                function labelDyLow(value) {
+                    if(value >= 0) {
+                        return y(0) - y(value) + 10*vw;
+                    } else {
+                        return y(value) - y(0) + 10*vw;
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1" />
+        <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        
+        <style>
+            @import url(//cdn.jsdelivr.net/font-nanum/1.0/nanumbarungothic/nanumbarungothic.css);
+            
+            html, body {
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                margin: 0;
+                padding: 0;
+                font: 9vmin 'Nanum Barun Gothic';
+            }
+            
+            svg {
+                width: 100%;
+                height: 100%;
+            }
+            
+            .bar rect {
+                shape-rendering: crispEdges;
+            }
+            
+            .bar text {
+                fill: #636666;
+            }
+            
+            .axis path, .axis line {
+                fill: none;
+                stroke: #7F8184;
+                opacity: .5;
+                shape-rendering: crispEdges;
+            }
+            
+            .axis path.domain {
+                stroke: #044437;
+            }
+            
+            .tick text, .tick line, .tick path {
+                display: none;
+            }
+            
+            .y.axis.extend .tick line {
+                display: block;
+            }
+            
+            .y.axis.extend path.domain {
+                display:none;
+            }
+            
+            .axis text {
+                fill: #044437;
+            }
+        </style>
+    </head>
+    <body>
+        <script>
+            var vw = window.innerWidth / 100,
+                vh = window.innerHeight / 100,
+                vmin = vw > vh ? vh : vw,
+                vmax = vw > vh ? vw : vh;
+            
+            var colorScheme = ["rgba(4, 68, 55, .3)", "rgba(4, 68, 55, .6)", "rgba(4, 68, 55, .7)", "rgba(4, 68, 55, .8)", "rgba(4, 68, 55, 1)"];
+            
+            var svg = d3.select("body").append("svg")
+                .append("g");
+            
+            var formatCount = d3.format(",.00f");
+            
+            var svgElem = document.querySelector("svg");
+            
+            var margin = {top: 1*vmin, right: 1*vmin, bottom: 14*vmin, left: 5*vmin},
+                width = +window.getComputedStyle(svgElem).width.match(/[\d.]+/) - margin.left - margin.right,
+                height = +window.getComputedStyle(svgElem).height.match(/[\d.]+/) - margin.top - margin.bottom;
+            
+            var padding = {right: 4*vmin, bottom: 3*vmin, left: 3*vmin};
+            
+            var x = d3.scale.linear()
+                .range([0, width - padding.right]);
+            
+            var x_axis = d3.scale.linear()
+                .range([0, width]);
+            
+            var y = d3.scale.linear()
+                .range([height, 0]);
+            
+            svg.attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+            
+            var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
+            
+            var xAxis = d3.svg.axis()
+                .orient("bottom")
+                .outerTickSize(0)
+                .tickValues([null]);
+            
+            var yAxis = d3.svg.axis()
+                .orient("left")
+                .outerTickSize(0)
+                .tickValues([null]);
+            
+            d3.json("data.json", function(jsonData) {
+                var values = [];
+                
+                while(jsonData.length > 24) {
+                    jsonData.shift();
+                }
+                
+                jsonData.forEach(function(d, i) {
+                    values.push(+d.AvgWaterTemp);
+                });
+                
+                var xMin = 17,
+                    xMax = 24;
+                x.domain([xMin, xMax]);
+                x_axis.domain([xMin, xMax]);
+                
+                xAxis.scale(x_axis);
+                
+                var freqMax = 12;
+            
+                var yAxis_extend = d3.svg.axis()
+                    .orient("left")
+                    .outerTickSize(0)
+                    .innerTickSize(-width - padding.left + padding.right)
+                    .tickValues([2, 4, 6, 8, 10]);
+                
+                y.domain([0, freqMax]);
+                
+                yAxis.scale(y);
+                yAxis_extend.scale(y);
+                
+                var data = d3.layout.histogram()
+                    .bins(x.ticks(11))
+                    .range([xMin, xMax])
+                    (values);
+                
+                svg.append("g")
+                    .attr("class", "x axis")    
+                    .attr("transform", "translate(" + (-padding.left) + ", " + (height + padding.bottom) + ")")
+                    .call(xAxis)
+                    .append("text")
+                    .attr("x", width)
+                    .attr("text-anchor", "end")
+                    .attr("dy", 9*vmin)
+                    .text("수온 분포");
+                
+                svg.append("g")
+                    .attr("class", "y axis")
+                    .attr("transform", "translate(" + (-padding.left) + ", " + padding.bottom + ")")
+                    .call(yAxis)
+                    .append("text")
+                    .attr("dx", 2*vmin)
+                    .attr("text-anchor", "start")
+                    .attr("dy", 8*vmin)
+                    .text("시간");
+                
+                svg.append("g")
+                    .attr("class", "y axis extend")
+                    .attr("transform", "translate(" + (-padding.left) + ", 0)")
+                    .call(yAxis_extend);
+                
+                var bar = svg.selectAll(".bar")
+                    .data(data)
+                    .enter()
+                    .append("g")
+                    .attr("class", "bar")
+                    .attr("transform", function(d) {
+                        return "translate(" + x(d.x) + ", " + y(d.y) + ")";
+                    });
+                
+                bar.append("rect")
+                    .attr("x", 1)
+                    .attr("width", x(data[0].dx + xMin) - 1)
+                    .attr("height", function(d) {
+                        return height - y(d.y);
+                    })
+                    .attr("fill", function(d) {
+                        var index = Math.floor(d.y / 2);
+                        if(index >= colorScheme.length) {
+                            index = colorScheme.length - 1;
+                        }
+                    
+                        return colorScheme[index];
+                    });
+            });
+        </script>
+    </body>
+</html>
