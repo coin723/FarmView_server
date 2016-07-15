@@ -1,0 +1,306 @@
+<link rel="stylesheet" href="https://cdn.rawgit.com/mistic100/Photo-Sphere-viewer/master/dist/photo-sphere-viewer.min.css" />
+<link rel="stylesheet" href="/images/farm/css/stylesheet.css" />
+<style>
+    #photosphere {
+        width: 100%;
+    }
+</style>
+
+<div id="photosphere"></div>
+
+<script>
+    var userAgent = window.navigator.userAgent;
+
+    if(userAgent.match("MSIE") !== null) {
+        var wholeDiv = document.querySelector("#photosphere");
+        wholeDiv.style.backgroundImage = "url(image/browsers_background_black.png)";
+        wholeDiv.classList.add("failed");
+        
+        document.querySelector("#photosphere").innerHTML = '<div class="change-browser"><div>지금 쓰고 계신 웹 브라우저에서는 팜뷰 기능이 지원되지 않습니다. <br /> 인터넷 익스플로러를 최신판(11)으로 업데이트하거나 <br /> 다른 웹 브라우저의 최신판을 써 주세요.</div><div>불편을 겪게 해 드려 죄송합니다.</div><div class="browsers"><section><div>요구되는 버전</div><div style="width: 60%;"><a href="http://windows.microsoft.com/ko-kr/internet-explorer/download-ie"><img src="image/ie.png"></a><div class="name">인터넷 익스플로러 11</div></div></section><section><div>권장 웹 브라우저</div><div><a href="https://www.mozilla.org/ko/firefox/"><img src="image/firefox.png"></a><div class="name">파이어폭스</div></div><div><a href="https://www.google.co.kr/chrome"><img src="image/chrome.png"></a><div class="name">크롬</div></div><div><a href="http://www.opera.com/ko"><img src="image/opera.png"></a><div class="name">오페라</div></div></section></div></div>';
+    }
+</script>
+<script src="https://cdn.rawgit.com/mrdoob/three.js/master/build/three.min.js"></script>
+<script src="https://cdn.rawgit.com/malko/D.js/master/lib/D.min.js"></script>
+<script src="https://cdn.rawgit.com/mistic100/uEvent/master/uevent.min.js"></script>
+<script src="https://cdn.rawgit.com/olado/doT/master/doT.min.js"></script>
+<script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/renderers/CanvasRenderer.js"></script>
+<script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/renderers/Projector.js"></script>
+<script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/postprocessing/MaskPass.js"></script>
+<script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/controls/DeviceOrientationControls.js"></script>
+<script src="https://cdn.rawgit.com/mistic100/Photo-Sphere-Viewer/master/dist/photo-sphere-viewer.min.js"></script>
+<script>
+    var userAgent = window.navigator.userAgent;
+
+    document.querySelector("#layout_body").style.height = "100%";
+
+    document.querySelector("#layout_body > div.clearbox").style.height = "calc(100% - 70px)";
+
+    document.querySelector(".body_area").style.height = "100%";
+
+    document.querySelector(".body_sub_area").style.height = "100%";
+
+    document.querySelector("#photosphere").style.height = "100%";
+
+    var average = {};
+
+    var isDay = new Boolean();
+
+    $.ajax({
+        url: "http://54.199.164.198:8888/average.json",
+        dataType: "jsonp",
+        jsonpCallback: "parseData",
+        success: function(data) {
+            average = data;
+            isDay = data.isDay;
+            psvScript();
+        }
+    });
+
+    var PSV = "";
+
+    var rotateUnitLong = Math.PI / 12,
+        rotateUnitLat = Math.PI / 12;
+
+    function psvScript() {
+        if(userAgent.match("MSIE") !== null) {
+            var wholeDiv = document.querySelector("#photosphere");
+            wholeDiv.style.backgroundImage = "url(image/browsers_background_black.png)";
+            wholeDiv.classList.add("failed");
+            
+            document.querySelector("#photosphere").innerHTML = '<div class="change-browser"><div>지금 쓰고 계신 웹 브라우저에서는 팜뷰 기능이 지원되지 않습니다. <br /> 인터넷 익스플로러를 최신판(11)으로 업데이트하거나 <br /> 다른 웹 브라우저의 최신판을 써 주세요.</div><div>불편을 겪게 해 드려 죄송합니다.</div><div class="browsers"><section><div>요구되는 버전</div><div style="width: 60%;"><a href="http://windows.microsoft.com/ko-kr/internet-explorer/download-ie"><img src="image/ie.png"></a><div class="name">인터넷 익스플로러 11</div></div></section><section><div>권장 웹 브라우저</div><div><a href="https://www.mozilla.org/ko/firefox/"><img src="image/firefox.png"></a><div class="name">파이어폭스</div></div><div><a href="https://www.google.co.kr/chrome"><img src="image/chrome.png"></a><div class="name">크롬</div></div><div><a href="http://www.opera.com/ko"><img src="image/opera.png"></a><div class="name">오페라</div></div></section></div></div>';
+
+            return;
+        }
+
+        document.querySelector("body").setAttribute("onkeydown", "rotateByKey(event)");
+
+        var title = {
+            waterTemp: 'Water temperature',
+            visibleLight: 'Visible light',
+            DO: 'DO',
+            airTemp: 'Air temperature'
+        };
+
+        var panoPath = isDay ? "http://mannabox.co.kr/farm/brightImgView" : "http://mannabox.co.kr/farm/darkImgView";
+
+        var container = document.querySelector("#photosphere");
+
+        PSV = PhotoSphereViewer({
+            container: container,
+            panorama: panoPath,
+            markers: (function() {
+                var a = [];
+                a.push({
+                    id: 'waterTemp',
+                    html: '<div></div>',
+                    content: '<div class="title">수온</div><div class="icon" style="background-image: url(\'http://mannabox.co.kr/images/farm/image/icon_waterTemp.png\');"></div><div class="main"><iframe src="http://54.199.164.198:8888/AvgWaterTemp" frameborder="0"></iframe></div><div class="sub">최적 수온<div class="icon" style="background-image: url(\'http://mannabox.co.kr/images/farm/image/icon_good.png\')"><div class="text">20°C</div></div></div><div class="sub">평균 수온<div class="icon" style="background-image: url(\'http://mannabox.co.kr/images/farm/image/icon_average.png\')"><div class="text">' + Math.round(average.waterTemp) + '°C</div></div></div><div class="sub graph"><iframe src="http://54.199.164.198:8888/AvgWaterTemp/histogram.html" frameborder="0"></div>',
+                    latitude: 0,
+                    longitude: isDay ? Math.PI : 0,
+                    className: 'popup',
+                    visible: false
+                });
+
+                a.push({
+                    id: 'visibleLight',
+                    html: '<div></div>',
+                    content: '<div class="title">햇빛</div><div class="icon" style="background-image: url(\'http://mannabox.co.kr/images/farm/image/icon_visibleLight.png\');"></div><div class="main"><iframe src="http://54.199.164.198:8888/AvgVisibleLight" frameborder="0"></iframe></div><div class="sub">오늘 날씨<div class="graph"><iframe src="http://54.199.164.198:8888/info_visibleLight.html" frameborder="0"></iframe></div></div><div class="sub">하늘 상태<div class="graph icon" style="background-image: url(\'http://mannabox.co.kr/images/farm/image/icon_average.png\')"><iframe src="http://54.199.164.198:8888/info_visibleLight_2.html" frameborder="0"></iframe></div></div><div class="sub graph"><iframe src="http://54.199.164.198:8888/AvgVisibleLight/histogram.html" frameborder="0"></div>',
+                    latitude: Math.PI / 4,
+                    longitude: isDay ? Math.PI / 2 : Math.PI * 3 / 2,
+                    className: 'popup',
+                    visible: false
+                });
+
+                a.push({
+                    id: 'DO',
+                    html: '<div></div>',
+                    content: '<div class="title">DO</div><div style="display: inline-block;"> (용존산소량)</div><div class="icon" style="background-image: url(\'http://mannabox.co.kr/images/farm/image/icon_DO.png\');"></div><div class="main"><iframe src="http://54.199.164.198:8888/AvgDO" frameborder="0"></iframe></div><div class="sub">수질 기준<div class="graph"><iframe src="http://54.199.164.198:8888/info_DO.html" frameborder="0"></iframe></div></div><div class="sub">평균 DO<div class="icon" style="background-image: url(\'http://mannabox.co.kr/images/farm/image/icon_average.png\')"><div class="text">' + Math.round(average.DO) + 'ppm</div></div></div><div class="sub graph"><iframe src="http://54.199.164.198:8888/AvgDO/histogram.html" frameborder="0"></div>',
+                    latitude: 0,
+                    longitude: isDay ? Math.PI / 2 : Math.PI * 3 / 2,
+                    className: 'popup',
+                    visible: false
+                });
+
+                a.push({
+                    id: 'airTemp',
+                    html: '<div></div>',
+                    content: '<div class="title">기온</div><div class="icon" style="background-image: url(\'http://mannabox.co.kr/images/farm/image/icon_airTemp.png\');"></div><div class="main"><iframe src="http://54.199.164.198:8888/AvgAirTemp" frameborder="0"></iframe></div><div class="sub">최적 기온<div class="icon" style="background-image: url(\'http://mannabox.co.kr/images/farm/image/icon_good.png\')"><div class="text">20°C</div></div></div><div class="sub">평균 기온<div class="icon" style="background-image: url(\'http://mannabox.co.kr/images/farm/image/icon_average.png\')"><div class="text">' + Math.round(average.airTemp) + '°C</div></div></div><div class="sub graph"><iframe src="http://54.199.164.198:8888/AvgAirTemp/histogram.html" frameborder="0"></div>',
+                    latitude: Math.PI / 4,
+                    longitude: isDay ? Math.PI * 3 / 2 : Math.PI / 2,
+                    className: 'popup',
+                    visible: false
+                });
+
+                return a;
+            }()),
+            caption: 'FarmView &copy <img src="http://mannabox.co.kr/images/farm/image/gnb_logo.png" />',
+            navbar: [
+                'autorotate', 'zoom', 'spacer-5', 'spacer-4',
+                {
+                    title: 'DataView',
+                    className: 'compressed-button',
+                    content: '<svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 41 41" enable-background="0 0 41 41"><g transform="translate(-5, 48) scale(0.0175, -0.0175)" fill="#272727" stroke="none"><path d="M320 2470 c-20 -20 -20 -33 -20 -984 0 -870 2 -964 16 -970 9 -3 532 -6 1163 -6 879 0 1150 3 1159 12 16 16 15 75 0 85 -7 4 -510 10 -1118 13 l-1105 5 -5 917 c-5 902 -5 917 -25 932 -27 21 -41 20 -65 -4z" id="node1" class="node"></path><path d="M2451 1943 l-114 -115 -86 86 c-51 50 -95 86 -106 86 -13 0 -141 -121 -360 -340 -187 -187 -348 -340 -357 -340 -9 0 -85 68 -168 150 -84 83 -158 150 -166 150 -7 0 -124 -111 -259 -246 -260 -261 -271 -276 -220 -310 23 -15 27 -15 50 0 13 9 112 104 219 211 106 107 200 195 207 195 8 0 83 -68 166 -150 84 -83 161 -150 170 -150 10 0 171 153 358 340 198 198 348 340 359 340 10 0 55 -36 99 -80 45 -44 87 -79 93 -78 7 2 80 69 164 150 140 137 151 150 148 180 -3 31 -6 33 -43 34 -38 2 -45 -3 -154 -113z" id="node2" class="node"></path></g><g transform="translate(-5, 48) scale(0.0175, -0.0175)" fill="#FFFFFF" stroke="none"></g></svg>',
+                    onClick: addDataMenu()
+                },
+                {
+                    title: 'Water temperature',
+                    className: 'custom-button',
+                    content: '수온',
+                    onClick: togglePopup('waterTemp')
+                }, 'spacer-3',
+                {
+                    title: 'Visible light',
+                    className: 'custom-button',
+                    content: '햇빛',
+                    onClick: togglePopup('visibleLight')
+                }, 'spacer-3',
+                {
+                    title: 'Air temperature',
+                    className: 'custom-button',
+                    content: '기온',
+                    onClick: togglePopup('airTemp')
+                }, 'spacer-3',
+                {
+                    title: 'DO',
+                    className: 'custom-button',
+                    content: 'DO',
+                    onClick: togglePopup('DO')
+                },
+                'caption', 'gyroscope'
+            ],
+            default_long: !isDay ? Math.PI : 0
+        });
+
+        var popupMarkers = [];
+
+        var currentPos = {
+            longitude: new Number(),
+            latitude: new Number()
+        };
+
+        var customButtons;
+
+        PSV.on('ready', function() {
+            customButtons = document.querySelectorAll(".psv-navbar .psv-button.custom-button");
+
+            currentPos.longitude = PSV.config.longitude !== undefined ? PSV.config.longitude : PSV.config.default_long;
+            currentPos.latitude = PSV.config.latitude !== undefined ? PSV.config.latitude : PSV.config.default_lat;
+
+            document.querySelector(".psv-hud").setAttribute("onclick", "PSV.stopAutorotate();");
+        });
+
+        PSV.on('click', function() {
+            document.querySelector(".psv-navbar .psv-button.compressed-button").classList.remove("phase");
+
+            for(i = 0; i < customButtons.length; i++) {
+                customButtons[i].classList.remove("phase");
+            }
+        });
+
+        PSV.on('position-updated', function(pos) {
+            currentPos = pos;
+        });
+
+        PSV.on('close-panel', function() {
+            PSV.hud.psv.trigger('unselect-marker');
+        });
+
+        PSV.on('select-marker', function(marker) {
+            for(i = 0; i < customButtons.length; i++) {
+                if(customButtons[i].getAttribute("title") === title[marker.id]) {
+                    customButtons[i].classList.add("clicked");
+                }
+            }
+        });
+
+        PSV.on('unselect-marker', function() {
+            for(i = 0; i < customButtons.length; i++) {
+                customButtons[i].classList.remove("clicked");
+            }
+        });
+
+        function togglePopup(markerID) {
+            return function() {
+                var lastMarker = PSV.getCurrentMarker();
+
+                if(lastMarker !== null) {
+                    PSV.hud.currentMarker = null;
+                    PSV.hud.psv.trigger('unselect-marker');
+
+                    PSV.hidePanel();
+
+                    if(lastMarker.id !== markerID) {
+                        simulateMarkerClick(markerID);
+                    }
+                } else {
+                    simulateMarkerClick(markerID);
+                }
+            }
+        }
+
+        function addDataMenu() {
+            return function() {
+                document.querySelector(".psv-navbar .psv-button.compressed-button").classList.add("phase");
+
+                for(i = 0; i < customButtons.length; i++) {
+                    customButtons[i].classList.add("phase");
+                }
+            }
+        }
+
+        function simulateMarkerClick(markerID) {
+            PSV.hud.psv.trigger('select-marker', PSV.getMarker(markerID));
+
+            PSV.gotoMarker(markerID, 500);
+
+            setTimeout(function(){
+                PSV.showPanel(PSV.getMarker(markerID).content);
+
+                PSV.hud.currentMarker = PSV.getMarker(markerID);
+            }, 500);
+        }
+    }
+
+    function rotateByKey(event) {
+        var key = event.keyCode || event.which;
+        switch(key) {
+            case 37:
+                PSV.stopAutorotate();
+                PSV.rotate({
+                    longitude: PSV.getPosition().longitude - rotateUnitLong,
+                    latitude: PSV.getPosition().latitude
+                });
+                break;
+            case 38:
+                PSV.stopAutorotate();
+                if(PSV.getPosition().latitude < Math.PI / 2) {
+                    PSV.rotate({
+                        longitude: PSV.getPosition().longitude,
+                        latitude: PSV.getPosition().latitude + rotateUnitLat
+                    });
+                }
+                break;
+            case 39:
+                PSV.stopAutorotate();
+                PSV.rotate({
+                    longitude: PSV.getPosition().longitude + rotateUnitLong,
+                    latitude: PSV.getPosition().latitude
+                });
+                break;
+            case 40:
+                PSV.stopAutorotate();
+                if(PSV.getPosition().latitude > -Math.PI / 2) {
+                    PSV.rotate({
+                        longitude: PSV.getPosition().longitude,
+                        latitude: PSV.getPosition().latitude - rotateUnitLat
+                    });
+                }
+                break;
+            default:
+                break;
+        }
+    }
+</script>

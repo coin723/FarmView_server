@@ -1,0 +1,256 @@
+@import url(//cdn.jsdelivr.net/font-nanum/1.0/nanumbarungothic/nanumbarungothic.css);
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font: 16px 'Nanum Barun Gothic';
+}
+
+#photosphere.failed {
+    overflow: scroll;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.change-browser {
+    text-align: center;
+    background-size: cover;
+    padding-top: 1em;
+    color: white;
+    max-width: 640px;
+    margin: auto;
+    border: 10px solid;
+    margin-top: 20vh;
+    padding-bottom: 3em;
+}
+
+.change-browser > div:first-child {
+    margin-top: 10vh;
+}
+
+.change-browser > div {
+    margin-top: 2em;
+    white-space: pre-wrap;
+}
+
+.change-browser img {
+    height: 10vmin;
+    max-height: 3em;
+    width: auto;
+}
+
+.browsers {
+    width: 70%;
+    margin: auto;
+    border-top: 2px solid;
+}
+
+.browsers section {
+    margin-top: 2em;
+}
+
+.browsers section > div {
+    display: inline-block;
+    vertical-align: middle;
+    width: 20%;
+}
+
+.browsers section > div:first-child {
+    width: 40%;
+    height: 100%;
+}
+
+.browsers .name {
+    display: block;
+}
+
+@media (max-width: 640px) {
+    .browsers .name {
+        display: none;
+    }
+}
+
+.psv-navbar {
+    background-color: #FFFFFF;
+}
+
+.psv-navbar .psv-caption {
+    font: 16px 'Nanum Barun Gothic';
+    color: #044437;
+    text-align: right;}
+
+.psv-navbar .psv-caption img {
+    height: .75em;
+    width: auto;
+    vertical-align: baseline;
+}
+
+@media (max-width: 800px) {
+    .psv-navbar .psv-caption {
+        visibility: visible;
+    }
+}
+
+@media (max-width: 600px) {
+    .psv-navbar .psv-caption {
+        visibility: hidden;
+    }
+}
+
+.psv-navbar .psv-button {
+    color: #044437;
+}
+
+.psv-navbar .psv-button svg * {
+    fill: #044437;
+}
+
+.psv-navbar .psv-button.autorotate-button svg path:nth-child(2) {
+    fill: none;
+    stroke-width: 2;
+    stroke: #044437;
+}
+
+.psv-navbar .zoom-button .range .line, .psv-navbar .zoom-button .range .handle {
+    background: #044437;
+}
+
+.psv-navbar .psv-button.compressed-button {
+    display: none;
+}
+
+.psv-navbar .psv-button.custom-button {
+    width: auto;
+    text-align: center;
+    margin-top: 2px;
+}
+
+.psv-navbar .psv-button.custom-button:hover, .psv-navbar .psv-button.custom-button.clicked {
+    border-top: 2px inset;
+    padding-top: 8px;
+}
+
+.psv-panel {
+    background: rgba(255, 255, 255, .75);
+    width: 65vmin;
+    top: 10vh;
+    right: 10vw;
+}
+
+.psv-container.has-navbar .psv-panel {
+    height: 70vmin;
+}
+
+.psv-container .psv-panel .content .main {
+    width: calc(65vmin - 2em);
+    height: calc(36.56vmin - 1.125em);
+}
+
+.psv-panel.open .resizer, .psv-panel.open .close-button {
+    display: none;
+}
+
+.psv-panel .content {
+    font: 3vmin 'Nanum Barun Gothic';
+    color: #044437;
+}
+
+.psv-panel .content .title {
+    width: 2em;
+    text-align: center;
+    margin-bottom: 4px;
+    border-bottom: 2px solid #044437;
+    display: inline-block;
+}
+
+.psv-panel .content .icon {
+    width: 2em;
+    height: 30px;
+/*
+    margin-top: 4px;
+    border-top: 2px solid #044437;
+*/
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.psv-panel .content .sub {
+    display: inline-block;
+    width: 29%;
+    height: auto;
+    text-align: center;
+    vertical-align: bottom;
+}
+
+.psv-panel .content .sub .icon, .psv-panel .content .sub .graph {
+    height: 10vmin;
+    margin-top: 0px;
+    border-top: none;
+}
+
+.psv-panel .content .sub .icon {
+    width: 10vmin;
+    margin: auto;
+    padding-top: calc(5vmin - .5em);
+}
+
+.psv-panel .content .sub .graph {
+    width: 100%;
+    margin: 0;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.psv-panel .content .sub .icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.psv-panel .content .sub .icon .text {
+    margin: auto;
+}
+
+.psv-panel .content .sub.graph {
+    width: 40%;
+    height: calc(10vmin + 1em);
+}
+
+@media screen and (max-aspect-ratio: 1/1) {
+    .psv-hud .psv-marker.popup:not(.svg-marker) {
+        display: none;
+    }
+}
+
+@media (max-width: 319px) {
+    .psv-navbar .psv-button.custom-button {
+        display: none;
+    }
+    
+    .psv-navbar .psv-button.compressed-button {
+        display: block;
+    }
+    
+    .psv-navbar .psv-button.custom-button.phase {
+        display: block;
+    }
+    
+    .psv-navbar .psv-button.compressed-button.phase {
+        display: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .psv-navbar .psv-button.custom-button {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+}
