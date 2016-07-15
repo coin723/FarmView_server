@@ -7,6 +7,7 @@
    `mannaFarmView.pem` is the _key_ that is used to authenticate the user by the server.
 
 2. Change directory to `FarmView_server`.
+
         cd FarmView_server
 
 3. Confirm that the server and updating processes exist.
