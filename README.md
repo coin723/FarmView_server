@@ -46,6 +46,6 @@
 
         sudo npm install -g phantomjs-prebuilt
 
-4. Modules used by the server's `.js` file are stored in `node_modules` directory. To update the modules, type this command at the `FarmView_server` directory.
+4. Modules used by `dvserver.js` file are stored in `node_modules` directory. To update the modules, type this command at the `FarmView_server` directory.
 
         npm update
