@@ -31,6 +31,7 @@
     `&` attached at the last seems to let the user escape from the UI where they add processes as _nohup_.
 
 5. After everything is done, disconnect from the server.
+
     exit
 
 ## Installing prerequisites in the case of (re)starting from scratch ##
