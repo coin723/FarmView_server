@@ -50,3 +50,6 @@
 4. Modules used by `dvserver.js` file are stored in `node_modules` directory. To update the modules, type this command at the `FarmView_server` directory.
 
         npm update
+
+## Advanced information ##
+This server offers the data, graph pages, and information pages to the [front page](http://mannabox.co.kr/farm) to implement those. The pages for graph and information contain scripts written in Javascript depending on D3.js library(v3).
