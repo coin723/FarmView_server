@@ -35,17 +35,17 @@
 ## Installing dependencies in the case of (re)starting from scratch ##
 1. Install Node.js.
 
-    curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-    sudo apt-get install -y nodejs
+        curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+        sudo apt-get install -y nodejs
 
 2. Install npm.
 
-    sudo apt-get install npm
+        sudo apt-get install npm
 
 3. Install PhantomJS.
 
-    sudo npm install -g phantomjs-prebuilt
+        sudo npm install -g phantomjs-prebuilt
 
 4. Modules used by the server `.js` file are stored in `node_modules` directory. To update the modules, type this command at the `FarmView_server` directory.
 
-    npm update
+        npm update
