@@ -13,7 +13,7 @@
 
         ps ax | grep nodejs
         ps ax | grep phantomjs
-   If `nodejs dvserver.js` and `watch -n 900 phantomjs update.js` appear in the result respectively, nothing is going wrong on the server.
+   If `nodejs dvserver.js` and `watch -n 900 phantomjs update.js` appear in the results respectively, nothing is going wrong on the server.
 
 4. If something is missing, that is, one or more of the processes is not alive, type
 
@@ -23,12 +23,11 @@
         nohup watch -n 900 phantomjs update.js &
    to make the computer update stored data periodically.
 
-   cf. `nohup` forces the command following that not to be killed even on hang-up(suspend) or executing `exit` command to let the SSH client disconnect from the server.
+    cf. `nohup` forces the command following that not to be killed even on hang-up(suspend) or executing `exit` command to let the SSH client disconnect from the server.
 
-   Command following `watch` is executed periodically. `-n 900` means that the command will be run at every 900 seconds.
+    Command following `watch` is executed periodically. `-n 900` means that the command will be run at every 900 seconds.
 
-   `&` attached at the last seems to let the user escape from the UI where they add processes as _nohup_.
+    `&` attached at the last seems to let the user escape from the UI where they add processes as _nohup_.
 
 5. After everything is done, disconnect from the server.
     exit
-        
