@@ -21,7 +21,7 @@
    to start the server or
 
         nohup watch -n 900 phantomjs update.js &
-   to make the computer update stored data periodically.
+   to make the computer update stored data periodically. Select the commands at your own purpose.
 
     cf. `nohup` forces the command following that not to be killed even on hang-up(suspend) or executing `exit` command to let the SSH client disconnect from the server.
 
@@ -31,3 +31,7 @@
 
 5. After everything is done, disconnect from the server.
     exit
+
+## Correct way to install the current version of Node.js on Ubuntu ##
+    curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+    sudo apt-get install -y nodejs
