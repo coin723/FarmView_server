@@ -52,4 +52,6 @@
         npm update
 
 ## Advanced information ##
-This server offers the data, graph pages, and information pages to the [front page](http://mannabox.co.kr/farm) to implement those. The pages for graph and information contain scripts written in Javascript depending on D3.js library(v3).
+This server offers the data, graph pages, and information pages to the [front page](http://mannabox.co.kr/farm) to implement those. The pages for graph and information contain scripts written in Javascript which depend on [D3.js](https://d3js.org/) library(v3).
+
+Front pages contain scripts which depend on [Photo Sphere Viewer](http://photo-sphere-viewer.js.org/) and jQuery(http://jquery.com/).
