@@ -33,7 +33,7 @@
 5. After everything is done, disconnect from the server.
     exit
 
-## Installing dependencies in the case of (re)starting from scratch ##
+## Installing prerequisites in the case of (re)starting from scratch ##
 1. Install Node.js.
 
         curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
